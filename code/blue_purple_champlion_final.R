@@ -1,180 +1,181 @@
 library(ggplot2)
 library(xlsx)
 library(openxlsx)
-matches_data <- read.xlsx('matches_final.xlsx',sheet = 1)
+matches_data <- read.xlsx('matches_na.xlsx',sheet = 1)
 matches <- na.omit(matches_data)
 #analyze win in blue_champ  with point
 blue_win <- matches$blue_win
 
-#blue_ad_champ 使用top 10  (Thresh,Jhin,Ezreal,Leona,Lux,Kaisa,Blitzcrank,Morgana,Ashe,Senna)
-blue_ad_champion <- as.factor(matches$blue_ad_champname)
-x_ad <- c('Thresh','Jhin','Ezreal','Leona','Lux','Kaisa','Blitzcrank','Morgana','Ashe','Senna')
-y_ad <- c(sum(matches$blue_ad_champname=='Thresh'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Thresh'),
-       sum(matches$blue_ad_champname=='Jhin'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Jhin'),
-       sum(matches$blue_ad_champname=='Ezreal'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Ezreal'),
-       sum(matches$blue_ad_champname=='Leona'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Leona'),
-       sum(matches$blue_ad_champname=='Lux'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Lux'),
-       sum(matches$blue_ad_champname=='Kaisa'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Kaisa'),
-       sum(matches$blue_ad_champname=='Blitzcrank'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Blitzcrank'),
-       sum(matches$blue_ad_champname=='Morgana'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Morgana'),
-       sum(matches$blue_ad_champname=='Ashe'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Ashe'),
-       sum(matches$blue_ad_champname=='Senna'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Senna'))
-blue_ad_champ <- data.frame(champ=as.factor(x_ad),winning_rate=y_ad)
-ad_plot <- ggplot(blue_ad_champ,aes(x=champ,y=winning_rate))
-ad_plot+geom_point()
+top10 <- function(champ){
+        col <- c()
+        for (i in 1:10){
+                champ_names <- names(sort(summary(champ),T))[i]
+                col <- c(col,champ_names)
+        }
+        return(col)
+}
 
-#blue_sup_champ 使用top 10  (Thresh,Leona,Nautilus,Morgana,Pyke,Nami,Senna,Camille,Lux,Yuumi)
+#blue_ad_champ 使用top 10  
+blue_ad_champion <- as.factor(matches_data$blue_ad_champname)
+x_blue_ad <- c()
+for(i in 1:10){
+        champ <- top10(blue_ad_champion)[i]
+        x_blue_ad <- c(x_blue_ad,champ)
+}
+y_blue_ad <- c()
+for(i in 1:10){
+        ratio <- sum(matches$blue_ad_champname==x_blue_ad[i]&matches$blue_win=='1')/sum(matches$blue_ad_champname==x_blue_ad[i])
+        y_blue_ad <- c(y_blue_ad,ratio)
+}
+
+blue_ad_champ <- data.frame(champ=as.factor(x_blue_ad),winning_rate=y_blue_ad)
+blue_ad_plot <- ggplot(blue_ad_champ,aes(x=champ,y=winning_rate))
+blue_ad_plot+geom_col()
+
+#blue_sup_champ 使用top 10  
 blue_sup_champion<- as.factor(matches$blue_sup_champname)
-x_sup <- c('Thresh','Leona','Nautilus','Morgana','Pyke','Nami','Senna','Camille','Lux','Yuumi')
-y_sup <-  c(sum(matches$blue_ad_champname=='Thresh'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Thresh'),
-            sum(matches$blue_ad_champname=='Leona'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Leona'),
-            sum(matches$blue_ad_champname=='Nautilus'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Nautilus'),
-            sum(matches$blue_ad_champname=='Morgana'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Morgana'),
-            sum(matches$blue_ad_champname=='Pyke'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Pyke'),
-            sum(matches$blue_ad_champname=='Nami'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Nami'),
-            sum(matches$blue_ad_champname=='Senna'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Senna'),
-            sum(matches$blue_ad_champname=='Camille'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Camille'),
-            sum(matches$blue_ad_champname=='Lux'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Lux'),
-            sum(matches$blue_ad_champname=='Yuumi'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Yuumi'))
-blue_sup_champ <- data.frame(champ=as.factor(x_sup),winning_rate=y_sup)
-sup_plot <- ggplot(blue_sup_champ,aes(x=champ,y=winning_rate))
-sup_plot+geom_point()
+x_blue_sup <- c()
+for(i in 1:10){
+        champ <- top10(blue_sup_champion)[i]
+        x_blue_sup <- c(x_blue_sup,champ)
+}
+y_blue_sup <- c()
+for(i in 1:10){
+        ratio <- sum(matches$blue_sup_champname==x_blue_sup[i]&matches$blue_win=='1')/sum(matches$blue_sup_champname==x_blue_sup[i])
+        y_blue_sup <- c(y_blue_sup,ratio)
+}
 
-#blue_mid_champ 使用top 10  (Akali,Camille,Sylas,Garen,Irelia,Malphite,Sett,Renekton,Darius,Aatrox)
+blue_sup_champ <- data.frame(champ=as.factor(x_blue_sup),winning_rate=y_blue_sup)
+blue_sup_plot <- ggplot(blue_sup_champ,aes(x=champ,y=winning_rate))
+blue_sup_plot+geom_col()
+
+#blue_mid_champ 使用top 10  
 blue_mid_champion <- as.factor(matches$blue_mid_champname)
-x_mid <- c('Akali','Camille','Sylas','Garen','Irelia','Malphite','Sett','Renekton','Darius','Aatrox')
-y_mid <- c(sum(matches$blue_ad_champname=='Akali'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Akali'),
-           sum(matches$blue_ad_champname=='Camille'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Camille'),
-           sum(matches$blue_ad_champname=='Sylas'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Sylas'),
-           sum(matches$blue_ad_champname=='Garen'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Garen'),
-           sum(matches$blue_ad_champname=='Irelia'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Irelia'),
-           sum(matches$blue_ad_champname=='Malphite'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Malphite'),
-           sum(matches$blue_ad_champname=='Sett'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Sett'),
-           sum(matches$blue_ad_champname=='Renekton'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Renekton'),
-           sum(matches$blue_ad_champname=='Darius'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Darius'),
-           sum(matches$blue_ad_champname=='Aatrox'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Aatrox'))
-blue_mid_champ <- data.frame(champ=as.factor(x_mid),winning_rate=y_mid)
-mid_plot <- ggplot(blue_mid_champ,aes(x=champ,y=winning_rate))
-mid_plot+geom_point()
+x_blue_mid <- c()
+for(i in 1:10){
+        champ <- top10(blue_mid_champion)[i]
+        x_blue_mid <- c(x_blue_mid,champ)
+}
+y_blue_mid <- c()
+for(i in 1:10){
+        ratio <- sum(matches$blue_mid_champname==x_blue_mid[i]&matches$blue_win=='1')/sum(matches$blue_mid_champname==x_blue_mid[i])
+        y_blue_mid <- c(y_blue_mid,ratio)
+}
+blue_mid_champ <- data.frame(champ=as.factor(x_blue_mid),winning_rate=y_blue_mid)
+blue_mid_plot <- ggplot(blue_mid_champ,aes(x=champ,y=winning_rate))
+blue_mid_plot+geom_col()
 
-#blue_jungle_champ 使用top 10  ('Ezreal','Jhin','Kaisa','Ashe','Caitlyn','Lucian','MissFortune','Samira','Vayne','Graves')
-blue_jungle_champion<- as.factor(matches$blue_jungle_champname)
-x_jg <- c('Ezreal','Jhin','Kaisa','Ashe','Caitlyn','Lucian','MissFortune','Samira','Vayne','Graves')
-y_jg <- c(sum(matches$blue_ad_champname=='Ezreal'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Ezreal'),
-           sum(matches$blue_ad_champname=='Jhin'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Jhin'),
-           sum(matches$blue_ad_champname=='Kaisa'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Kaisa'),
-           sum(matches$blue_ad_champname=='Ashe'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Ashe'),
-           sum(matches$blue_ad_champname=='Caitlyn'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Caitlyn'),
-           sum(matches$blue_ad_champname=='Lucian'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Lucian'),
-           sum(matches$blue_ad_champname=='MissFortune'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='MissFortune'),
-           sum(matches$blue_ad_champname=='Samira'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Samira'),
-           sum(matches$blue_ad_champname=='Vayne'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Vayne'),
-           sum(matches$blue_ad_champname=='Graves'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Graves'))
-blue_jg_champ <- data.frame(champ=as.factor(x_jg),winning_rate=y_jg)
-jg_plot <- ggplot(blue_jg_champ,aes(x=champ,y=winning_rate))
-jg_plot+geom_point()
+#blue_jungle_champ 使用top 10  
+blue_jungle_champion<- as.factor(matches_data$blue_jungle_champname)
+x_blue_jg <- c()
+for(i in 1:10){
+        champ <- top10(blue_jungle_champion)[i]
+        x_blue_jg <- c(x_blue_jg,champ)
+}
+y_blue_jg <- c()
+for(i in 1:10){
+        ratio <- sum(matches$blue_jungle_champname==x_blue_jg[i]&matches$blue_win=='1')/sum(matches$blue_jungle_champname==x_blue_jg[i])
+        y_blue_jg <- c(y_blue_jg,ratio)
+}
+blue_jg_champ <- data.frame(champ=as.factor(x_blue_jg),winning_rate=y_blue_jg)
+blue_jg_plot <- ggplot(blue_jg_champ,aes(x=champ,y=winning_rate))
+blue_jg_plot+geom_col()
 
-#blue_top_champ 使用top 10 ('LeeSin','Graves','Malphite','Camille','Darius','Akali','Jax','Irelia','Kayn','Ekko')
+#blue_top_champ 使用top 10 
 blue_top_champion <- as.factor(matches$blue_top_champname)
-x_top <- c('LeeSin','Graves','Malphite','Camille','Darius','Akali','Jax','Irelia','Kayn','Ekko')
-y_top <- c(sum(matches$blue_ad_champname=='LeeSin'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='LeeSin'),
-          sum(matches$blue_ad_champname=='Graves'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Graves'),
-          sum(matches$blue_ad_champname=='Malphite'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Malphite'),
-          sum(matches$blue_ad_champname=='Camille'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Camille'),
-          sum(matches$blue_ad_champname=='Darius'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Darius'),
-          sum(matches$blue_ad_champname=='Akali'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Akali'),
-          sum(matches$blue_ad_champname=='Jax'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Jax'),
-          sum(matches$blue_ad_champname=='Irelia'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Irelia'),
-          sum(matches$blue_ad_champname=='Kayn'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Kayn'),
-          sum(matches$blue_ad_champname=='Ekko'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Ekkoc'))
-blue_top_champ <- data.frame(champ=as.factor(x_top),winning_rate=y_top)
-top_plot <- ggplot(blue_top_champ,aes(x=champ,y=winning_rate))
-top_plot+geom_point()
+x_blue_top <- c()
+for(i in 1:10){
+        champ <- top10(blue_top_champion)[i]
+        x_blue_top <- c(x_blue_top,champ)
+}
+y_blue_top <- c()
+for(i in 1:10){
+        ratio <- sum(matches$blue_top_champname==x_blue_top[i]&matches$blue_win=='1')/sum(matches$blue_top_champname==x_blue_top[i])
+        y_blue_top <- c(y_blue_top,ratio)
+}
+blue_top_champ <- data.frame(champ=as.factor(x_blue_top),winning_rate=y_blue_top)
+blue_top_plot <- ggplot(blue_top_champ,aes(x=champ,y=winning_rate))
+blue_top_plot+geom_col()
 
 #analyze win in purple_champ  with point
 blue_win <- matches$blue_win
 
-#purple_ad_champ 使用top 10  ('Thresh','Ezreal','Jhin','Kaisa','Ashe','Lux','Leona','Caitlyn','MissFortune','Lucian')
+#purple_ad_champ 使用top 10 
 purple_ad_champion <- as.factor(matches$purple_ad_champname)
-x_ad <- c('Thresh','Ezreal','Jhin','Kaisa','Ashe','Lux','Leona','Caitlyn','MissFortune','Lucian')
-y_ad <- c(sum(matches$blue_ad_champname=='Thresh'&matches$blue_win=='0')/sum(matches$blue_ad_champname=='Thresh'),
-          sum(matches$blue_ad_champname=='Ezreal'&matches$blue_win=='0')/sum(matches$blue_ad_champname=='Ezreal'),
-          sum(matches$blue_ad_champname=='Jhin'&matches$blue_win=='0')/sum(matches$blue_ad_champname=='Jhin'),
-          sum(matches$blue_ad_champname=='Kaisa'&matches$blue_win=='0')/sum(matches$blue_ad_champname=='Kaisa'),
-          sum(matches$blue_ad_champname=='Ashe'&matches$blue_win=='0')/sum(matches$blue_ad_champname=='Ashe'),
-          sum(matches$blue_ad_champname=='Lux'&matches$blue_win=='0')/sum(matches$blue_ad_champname=='Lux'),
-          sum(matches$blue_ad_champname=='Leona'&matches$blue_win=='0')/sum(matches$blue_ad_champname=='Leona'),
-          sum(matches$blue_ad_champname=='Caitlyn'&matches$blue_win=='0')/sum(matches$blue_ad_champname=='Caitlyn'),
-          sum(matches$blue_ad_champname=='MissFortune'&matches$blue_win=='0')/sum(matches$blue_ad_champname=='MissFortune'),
-          sum(matches$blue_ad_champname=='Lucian'&matches$blue_win=='0')/sum(matches$blue_ad_champname=='Lucian'))
-purple_ad_champ <- data.frame(champ=as.factor(x_ad),winning_rate=y_ad)
-ad_plot <- ggplot(purple_ad_champ,aes(x=champ,y=winning_rate))
-ad_plot+geom_point()
+x_purple_ad <- c()
+for(i in 1:10){
+        champ <- top10(purple_ad_champion)[i]
+        x_purple_ad <- c(x_purple_ad,champ)
+}
+y_purple_ad <- c()
+for(i in 1:10){
+        ratio <- sum(matches$purple_ad_champname==x_purple_ad[i]&matches$blue_win=='0')/sum(matches$purple_ad_champname==x_purple_ad[i])
+        y_purple_ad <- c(y_purple_ad,ratio)
+}
+purple_ad_champ <- data.frame(champ=as.factor(x_purple_ad),winning_rate=y_purple_ad)
+purple_ad_plot <- ggplot(purple_ad_champ,aes(x=champ,y=winning_rate))
+purple_ad_plot+geom_col()
 
-#purple_sup_champ 使用top 10  (Thresh,Leona,Nautilus,Morgana,Pyke,Nami,Senna,Camille,Lux,Yuumi)
+#purple_sup_champ 使用top 10 
 purple_sup_champion<- as.factor(matches$purple_sup_champname)
-x_sup <- c('Akali','Yasuo','Zed','Sylas','Thresh','Lux','Yone','Lucian','Katarina','Ahri')
-y_sup <-  c(sum(matches$blue_ad_champname=='Thresh'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Thresh'),
-            sum(matches$blue_ad_champname=='Leona'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Leona'),
-            sum(matches$blue_ad_champname=='Nautilus'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Nautilus'),
-            sum(matches$blue_ad_champname=='Morgana'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Morgana'),
-            sum(matches$blue_ad_champname=='Pyke'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Pyke'),
-            sum(matches$blue_ad_champname=='Nami'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Nami'),
-            sum(matches$blue_ad_champname=='Senna'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Senna'),
-            sum(matches$blue_ad_champname=='Camille'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Camille'),
-            sum(matches$blue_ad_champname=='Lux'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Lux'),
-            sum(matches$blue_ad_champname=='Yuumi'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Yuumi'))
-blue_sup_champ <- data.frame(champ=as.factor(x_sup),winning_rate=y_sup)
-sup_plot <- ggplot(blue_sup_champ,aes(x=champ,y=winning_rate))
-sup_plot+geom_point()
+x_purple_sup <- c()
+for(i in 1:10){
+        champ <- top10(purple_sup_champion)[i]
+        x_purple_sup <- c(x_purple_sup,champ)
+}
+y_purple_sup <- c()
+for(i in 1:10){
+        ratio <- sum(matches$purple_sup_champname==x_purple_sup[i]&matches$blue_win=='0')/sum(matches$purple_sup_champname==x_purple_sup[i])
+        y_purple_sup <- c(y_purple_sup,ratio)
+}
+purple_sup_champ <- data.frame(champ=as.factor(x_purple_sup),winning_rate=y_purple_sup)
+purple_sup_plot <- ggplot(purple_sup_champ,aes(x=champ,y=winning_rate))
+purple_sup_plot+geom_col()
 
-#blue_mid_champ 使用top 10  (Akali,Camille,Sylas,Garen,Irelia,Malphite,Sett,Renekton,Darius,Aatrox)
-blue_mid_champion <- as.factor(matches$blue_mid_champname)
-x_mid <- c('Akali','Camille','Sylas','Garen','Irelia','Malphite','Sett','Renekton','Darius','Aatrox')
-y_mid <- c(sum(matches$blue_ad_champname=='Akali'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Akali'),
-           sum(matches$blue_ad_champname=='Camille'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Camille'),
-           sum(matches$blue_ad_champname=='Sylas'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Sylas'),
-           sum(matches$blue_ad_champname=='Garen'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Garen'),
-           sum(matches$blue_ad_champname=='Irelia'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Irelia'),
-           sum(matches$blue_ad_champname=='Malphite'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Malphite'),
-           sum(matches$blue_ad_champname=='Sett'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Sett'),
-           sum(matches$blue_ad_champname=='Renekton'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Renekton'),
-           sum(matches$blue_ad_champname=='Darius'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Darius'),
-           sum(matches$blue_ad_champname=='Aatrox'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Aatrox'))
-blue_mid_champ <- data.frame(champ=as.factor(x_mid),winning_rate=y_mid)
-mid_plot <- ggplot(blue_mid_champ,aes(x=champ,y=winning_rate))
-mid_plot+geom_point()
+#purple_mid_champ 使用top 10 
+purple_mid_champion <- as.factor(matches$purple_mid_champname)
+x_purple_mid <- c()
+for(i in 1:10){
+        champ <- top10(purple_mid_champion)[i]
+        x_purple_mid <- c(x_purple_mid,champ)
+}
+y_purple_mid <- c()
+for(i in 1:10){
+        ratio <- sum(matches$purple_mid_champname==x_purple_mid[i]&matches$blue_win=='0')/sum(matches$purple_mid_champname==x_purple_mid[i])
+        y_purple_mid <- c(y_purple_mid,ratio)
+}
+purple_mid_champ <- data.frame(champ=as.factor(x_purple_mid),winning_rate=y_purple_mid)
+purple_mid_plot <- ggplot(purple_mid_champ,aes(x=champ,y=winning_rate))
+purple_mid_plot+geom_col()
 
-#blue_jungle_champ 使用top 10  ('Ezreal','Jhin','Kaisa','Ashe','Caitlyn','Lucian','MissFortune','Samira','Vayne','Graves')
-blue_jungle_champion<- as.factor(matches$blue_jungle_champname)
-x_jg <- c('Ezreal','Jhin','Kaisa','Ashe','Caitlyn','Lucian','MissFortune','Samira','Vayne','Graves')
-y_jg <- c(sum(matches$blue_ad_champname=='Ezreal'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Ezreal'),
-          sum(matches$blue_ad_champname=='Jhin'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Jhin'),
-          sum(matches$blue_ad_champname=='Kaisa'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Kaisa'),
-          sum(matches$blue_ad_champname=='Ashe'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Ashe'),
-          sum(matches$blue_ad_champname=='Caitlyn'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Caitlyn'),
-          sum(matches$blue_ad_champname=='Lucian'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Lucian'),
-          sum(matches$blue_ad_champname=='MissFortune'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='MissFortune'),
-          sum(matches$blue_ad_champname=='Samira'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Samira'),
-          sum(matches$blue_ad_champname=='Vayne'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Vayne'),
-          sum(matches$blue_ad_champname=='Graves'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Graves'))
-blue_jg_champ <- data.frame(champ=as.factor(x_jg),winning_rate=y_jg)
-jg_plot <- ggplot(blue_jg_champ,aes(x=champ,y=winning_rate))
-jg_plot+geom_point()
+#purple_jungle_champ 使用top 10 
+purple_jungle_champion<- as.factor(matches$purple_jungle_champname)
+x_purple_jg <- c()
+for(i in 1:10){
+        champ <- top10(purple_jungle_champion)[i]
+        x_purple_jg <- c(x_purple_jg,champ)
+}
+y_purple_jg <- c()
+for(i in 1:10){
+        ratio <- sum(matches$purple_jungle_champname==x_purple_jg[i]&matches$blue_win=='0')/sum(matches$purple_jungle_champname==x_purple_jg[i])
+        y_purple_jg <- c(y_purple_jg,ratio)
+}
+purple_jg_champ <- data.frame(champ=as.factor(x_purple_jg),winning_rate=y_purple_jg)
+purple_jg_plot <- ggplot(purple_jg_champ,aes(x=champ,y=winning_rate))
+purple_jg_plot+geom_col()
 
-#blue_top_champ 使用top 10 ('LeeSin','Graves','Malphite','Camille','Darius','Akali','Jax','Irelia','Kayn','Ekko')
-blue_top_champion <- as.factor(matches$blue_top_champname)
-x_top <- c('LeeSin','Graves','Malphite','Camille','Darius','Akali','Jax','Irelia','Kayn','Ekko')
-y_top <- c(sum(matches$blue_ad_champname=='LeeSin'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='LeeSin'),
-           sum(matches$blue_ad_champname=='Graves'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Graves'),
-           sum(matches$blue_ad_champname=='Malphite'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Malphite'),
-           sum(matches$blue_ad_champname=='Camille'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Camille'),
-           sum(matches$blue_ad_champname=='Darius'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Darius'),
-           sum(matches$blue_ad_champname=='Akali'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Akali'),
-           sum(matches$blue_ad_champname=='Jax'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Jax'),
-           sum(matches$blue_ad_champname=='Irelia'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Irelia'),
-           sum(matches$blue_ad_champname=='Kayn'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Kayn'),
-           sum(matches$blue_ad_champname=='Ekko'&matches$blue_win=='1')/sum(matches$blue_ad_champname=='Ekkoc'))
-blue_top_champ <- data.frame(champ=as.factor(x_top),winning_rate=y_top)
-top_plot <- ggplot(blue_top_champ,aes(x=champ,y=winning_rate))
-top_plot+geom_point()
+#purple_top_champ 使用top 10 
+purple_top_champion <- as.factor(matches$purple_top_champname)
+x_purple_top <- c()
+for(i in 1:10){
+        champ <- top10(purple_top_champion)[i]
+        x_purple_top <- c(x_purple_top,champ)
+}
+y_purple_top <- c()
+for(i in 1:10){
+        ratio <- sum(matches$purple_top_champname==x_purple_top[i]&matches$blue_win=='0')/sum(matches$purple_top_champname==x_purple_top[i])
+        y_purple_top <- c(y_purple_top,ratio)
+}
+purple_top_champ <- data.frame(champ=as.factor(x_purple_top),winning_rate=y_purple_top)
+purple_top_plot <- ggplot(purple_top_champ,aes(x=champ,y=winning_rate))
+purple_top_plot+geom_col()
