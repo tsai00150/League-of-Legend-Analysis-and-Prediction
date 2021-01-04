@@ -1,5 +1,5 @@
 library(ggplot2)
-matches_data <- read.xlsx('matches.xlsx',sheet = 1)
+matches_data <- read.xlsx('matches_na.xlsx',sheet = 1)
 matches <- na.omit(matches_data)
 #analyze win in blue_kda in range
 matches <- cbind(matches,
@@ -13,9 +13,53 @@ matches <- cbind(matches,
                  purple_mid_kad = ((matches$purple_mid_kills+matches$purple_mid_assists)/matches$purple_mid_deaths),
                  purple_jungle_kad = ((matches$purple_jungle_kills+matches$purple_jungle_assists)/matches$purple_jungle_deaths),
                  purple_top_kad = ((matches$purple_top_kills+matches$purple_top_assists)/matches$purple_top_deaths))
+#选取数据的数值型数据列
+#KDA比較(沒用用range) blue
+matches_blue_kda<-matches[,c('blue_ad_kad','blue_sup_kad','blue_mid_kad','blue_jungle_kad','blue_top_kad'
+                        )]
+#计算相关系数，方法选择pearson
+cor(matches_blue_kda, method="pearson")
+#画出相关性矩阵图，标题：相关性矩阵图
+pairs(matches_blue_kda,spread = F,lty.smooth=2,main='blue_kda_correlation')
 
-#有些0死的 可能需要把0視為1？
+#KDA比較(沒用用range) purple
+matches_purple_kda<-matches[,c('purple_ad_kad','purple_sup_kad','purple_mid_kad','purple_jungle_kad','purple_top_kad'
+)]
 
-#數據齊全後 用summary看range 大於2？
-#畫圖後 看有些做完range後拿去當feature建模
+#计算相关系数，方法选择pearson
+cor(matches_purple_kda, method="pearson")
+#画出相关性矩阵图，标题：相关性矩阵图
+pairs(matches_purple_kda,spread = F,lty.smooth=2,main='purple_kda_correlation')
+
+#我用summary看 決定用 2 4 6區分 分成四個區間 發現效果不好 改成大於6的視為6
+#blue_ad_kad.fix <- ifelse(matches$blue_ad_kad<2,1,ifelse(matches$blue_ad_kad<4,2,ifelse(matches$blue_ad_kad<6,3,4)))
+matches <- cbind(matches,
+                 blue_ad_kad_range = ifelse(matches$blue_ad_kad>6,6,matches$blue_ad_kad),
+                 blue_sup_kad_range = ifelse(matches$blue_sup_kad>6,6,matches$blue_sup_kad),
+                 blue_mid_kad_range = ifelse(matches$blue_mid_kad>6,6,matches$blue_mid_kad),
+                 blue_jungle_kad_range = ifelse(matches$blue_jungle_kad>6,6,matches$blue_jungle_kad),
+                 blue_top_kad_range = ifelse(matches$blue_top_kad>6,6,matches$blue_top_kad),
+                 purple_ad_kad_range = ifelse(matches$purple_ad_kad>6,6,matches$purple_ad_kad),
+                 purple_sup_kad_range = ifelse(matches$purple_sup_kad>6,6,matches$purple_sup_kad),
+                 purple_mid_kad_range = ifelse(matches$purple_mid_kad>6,6,matches$purple_mid_kad),
+                 purple_jungle_kad_range = ifelse(matches$purple_jungle_kad>6,6,matches$purple_jungle_kad),
+                 purple_top_kad_range = ifelse(matches$purple_top_kad>6,6,matches$purple_top_kad)
+)
+
+matches_blue_kda_range<-matches[,c('blue_ad_kad_range','blue_sup_kad_range','blue_mid_kad_range','blue_jungle_kad_range','blue_top_kad_range'
+)]
+#计算相关系数，方法选择pearson
+cor(matches_blue_kda_range, method="pearson")
+#画出相关性矩阵图，标题：相关性矩阵图
+pairs(matches_blue_kda_range,spread = F,lty.smooth=2,main='blue_kda_range_correlation')
+
+#KDA比較(沒用用range) purple
+matches_purple_kda_range<-matches[,c('purple_ad_kad_range','purple_sup_kad_range','purple_mid_kad_range','purple_jungle_kad_range','purple_top_kad_range'
+)]
+
+#计算相关系数，方法选择pearson
+cor(matches_purple_kda_range, method="pearson")
+#画出相关性矩阵图，标题：相关性矩阵图
+pairs(matches_purple_kda_range,spread = F,lty.smooth=2,main='purple_kda_range_correlation')
+
 
