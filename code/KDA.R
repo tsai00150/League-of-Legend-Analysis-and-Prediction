@@ -63,3 +63,35 @@ cor(matches_purple_kda_range, method="pearson")
 pairs(matches_purple_kda_range,spread = F,lty.smooth=2,main='purple_kda_range_correlation')
 
 
+#KDA取ln
+matches <- cbind(matches,
+                 blue_ad_kad_ln = log(matches$blue_ad_kad+1),
+                 blue_sup_kad_ln = log(matches$blue_sup_kad+1),
+                 blue_mid_kad_ln = log(matches$blue_mid_kad+1),
+                 blue_jungle_kad_ln = log(matches$blue_jungle_kad+1),
+                 blue_top_kad_ln = log(matches$blue_top_kad+1),
+                 purple_ad_kad_ln = log(matches$purple_ad_kad+1),
+                 purple_sup_kad_ln = log(matches$purple_sup_kad+1),
+                 purple_mid_kad_ln = log(matches$purple_mid_kad+1),
+                 purple_jungle_kad_ln = log(matches$purple_jungle_kad+1),
+                 purple_top_kad_ln = log(matches$purple_top_kad+1)
+)
+
+matches_blue_kda_ln<-matches[,c('blue_ad_kad_ln','blue_sup_kad_ln','blue_mid_kad_ln','blue_jungle_kad_ln','blue_top_kad_ln'
+)]
+#计算相关系数，方法选择pearson
+cor(matches_blue_kda_ln, method="pearson")
+#画出相关性矩阵图，标题：相关性矩阵图
+pairs(matches_blue_kda_range,spread = F,lty.smooth=2,main='blue_kda_ln_correlation')
+
+#KDA比較(沒用用range) purple
+matches_purple_kda_ln<-matches[,c('purple_ad_kad_ln','purple_sup_kad_ln','purple_mid_kad_ln','purple_jungle_kad_ln','purple_top_kad_ln'
+)]
+
+#计算相关系数，方法选择pearson
+cor(matches_purple_kda_ln, method="pearson")
+#画出相关性矩阵图，标题：相关性矩阵图
+pairs(matches_purple_kda_ln,spread = F,lty.smooth=2,main='purple_kda_ln_correlation')
+
+
+
