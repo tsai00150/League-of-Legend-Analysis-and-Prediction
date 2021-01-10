@@ -6,7 +6,7 @@ library(scales)
 library(dplyr)
 library(tibble)
 library(openxlsx)
-matches_data <- read.xlsx('matches_final.xlsx',sheet = 1)
+matches_data <- read.xlsx('matches_na.xlsx',sheet = 1)
 #drop na
 matches <- na.omit(matches_data)
 #analyze win in blue_first  with ggradar
@@ -24,54 +24,6 @@ blue_win_first_fix <- cbind.data.frame(blue_win=win,blue_firstBlood=as.numeric(f
                                        blue_firstRiftHerald=as.numeric(firstRiftHerald_fix))
 
 ggradar(blue_win_first_fix,grid.line.width = 0.5)
-
-#analyze win in purple_first  with ggradar
-
-win <- c('Blue_Win','Purple_Win')
-firstblood_fix <- c(sum(matches_data$purple_firstBlood=='1'&matches_data$blue_win=='1')/3011,sum(matches_data$purple_firstBlood=='1'&matches_data$blue_win=='0')/3011)
-firstTower_fix <- c(sum(matches_data$purple_firstTower=='1'&matches_data$blue_win=='1')/3011,sum(matches_data$purple_firstTower=='1'&matches_data$blue_win=='0')/3011)
-firstDragon_fix <- c(sum(matches_data$purple_firstDragon=='1'&matches_data$blue_win=='1')/3011,sum(matches_data$purple_firstDragon=='1'&matches_data$blue_win=='0')/3011)
-firstBaron_fix <- c(sum(matches_data$purple_firstBaron=='1'&matches_data$blue_win=='1')/3011,sum(matches_data$purple_firstBaron=='1'&matches_data$blue_win=='0')/3011)
-firstInhibitor_fix <- c(sum(matches_data$purple_firstInhibitor=='1'&matches_data$blue_win=='1')/3011,sum(matches_data$purple_firstInhibitor=='1'&matches_data$blue_win=='0')/3011)
-firstRiftHerald_fix <- c(sum(matches_data$purple_firstRiftHerald=='1'&matches_data$blue_win=='1')/3011,sum(matches_data$purple_firstRiftHerald=='1'&matches_data$blue_win=='0')/3011)
-
-purple_win_first_fix <- cbind.data.frame(purple_win=win,purple_firstBlood=as.numeric(firstblood_fix),
-                                         purple_firstTowerd=as.numeric(firstTower_fix),purple_firstDragon=as.numeric(firstDragon_fix),
-                                         purple_firstBaron=as.numeric(firstBaron_fix),purple_firstInhibitor=as.numeric(firstInhibitor_fix),
-                                         purple_firstRiftHerald=as.numeric(firstRiftHerald_fix))
-
-ggradar(purple_win_first_fix,grid.line.width = 0.5)
-
-# analyze win in blue  with ggradar
-win <- c('Blue_Win','Purple_Win')
-blue_towerKills_fix <- c(sum(matches_data$blue_towerKills=='1'&matches_data$blue_win=='1')/1857,sum(matches_data$blue_towerKills=='1'&matches_data$blue_win=='0')/1857)
-blue_inhibitorKills_fix <- c(sum(matches_data$blue_inhibitorKills=='1'&matches_data$blue_win=='1')/1857,sum(matches_data$blue_inhibitorKills=='1'&matches_data$blue_win=='0')/1857)
-blue_baronKills_fix <- c(sum(matches_data$blue_baronKills=='1'&matches_data$blue_win=='1')/1857,sum(matches_data$blue_baronKills=='1'&matches_data$blue_win=='0')/1857)
-blue_dragonKills_fix <- c(sum(matches_data$blue_dragonKills=='1'&matches_data$blue_win=='1')/1857,sum(matches_data$blue_dragonKills=='1'&matches_data$blue_win=='0')/1857)
-blue_riftHeraldKills_fix <- c(sum(matches_data$blue_riftHeraldKills=='1'&matches_data$blue_win=='1')/1857,sum(matches_data$blue_riftHeraldKills=='1'&matches_data$blue_win=='0')/1857)
-
-blue_win_fix <- cbind.data.frame(blue_win=win,blue_towerKills=as.numeric(blue_towerKills_fix),
-                                 blue_inhibitorKills=as.numeric(blue_inhibitorKills_fix),blue_riftHeraldKills=as.numeric(blue_riftHeraldKills_fix)
-                                 ,blue_dragonKills=as.numeric(blue_dragonKills_fix),
-                                 blue_baronKills=as.numeric(blue_baronKills_fix)
-)
-
-ggradar(blue_win_fix,grid.line.width = 0.5)
-
-# analyze win in purple  with ggradar
-win <- c('Blue_Win','Purple_Win')
-purple_towerKills_fix <- c(sum(matches_data$purple_towerKills=='1'&matches_data$blue_win=='1')/1995,sum(matches_data$purple_towerKills=='1'&matches_data$blue_win=='0')/1995)
-purple_inhibitorKills_fix <- c(sum(matches_data$purple_inhibitorKills=='1'&matches_data$blue_win=='1')/1995,sum(matches_data$purple_inhibitorKills=='1'&matches_data$blue_win=='0')/1995)
-purple_baronKills_fix <- c(sum(matches_data$purple_baronKills=='1'&matches_data$blue_win=='1')/1995,sum(matches_data$purple_baronKills=='1'&matches_data$blue_win=='0')/1995)
-purple_dragonKills_fix <- c(sum(matches_data$purple_dragonKills=='1'&matches_data$blue_win=='1')/1995,sum(matches_data$purple_dragonKills=='1'&matches_data$blue_win=='0')/1995)
-purple_riftHeraldKills_fix <- c(sum(matches_data$purple_riftHeraldKills=='1'&matches_data$blue_win=='1')/1995,sum(matches_data$purple_riftHeraldKills=='1'&matches_data$blue_win=='0')/1995)
-
-purple_win_fix <- cbind.data.frame(purple_win=win,purple_towerKills=as.numeric(purple_towerKills_fix),
-                                   purple_inhibitorKills=as.numeric(purple_inhibitorKills_fix),purple_riftHeraldKills=as.numeric(purple_riftHeraldKills_fix)
-                                   ,purple_dragonKills=as.numeric(purple_dragonKills_fix),purple_baronKills=as.numeric(purple_baronKills_fix)
-)
-
-ggradar(purple_win_fix,grid.line.width = 0.5)
 # --blue_purple_win_radar--
 
 
@@ -93,7 +45,6 @@ top10 <- function(champ){
   return(col)
 }
 
-#blue_ad_champ 使用top 10  
 blue_ad_champion <- as.factor(matches_data$blue_ad_champname)
 x_blue_ad <- c()
 for(i in 1:10){
@@ -110,7 +61,6 @@ blue_ad_champ <- data.frame(champ=as.factor(x_blue_ad),winning_rate=y_blue_ad)
 blue_ad_plot <- ggplot(blue_ad_champ,aes(x=champ,y=winning_rate))
 blue_ad_plot+geom_col()
 
-#blue_sup_champ 使用top 10  
 blue_sup_champion<- as.factor(matches$blue_sup_champname)
 x_blue_sup <- c()
 for(i in 1:10){
@@ -127,7 +77,6 @@ blue_sup_champ <- data.frame(champ=as.factor(x_blue_sup),winning_rate=y_blue_sup
 blue_sup_plot <- ggplot(blue_sup_champ,aes(x=champ,y=winning_rate))
 blue_sup_plot+geom_col()
 
-#blue_mid_champ 使用top 10  
 blue_mid_champion <- as.factor(matches$blue_mid_champname)
 x_blue_mid <- c()
 for(i in 1:10){
@@ -143,7 +92,6 @@ blue_mid_champ <- data.frame(champ=as.factor(x_blue_mid),winning_rate=y_blue_mid
 blue_mid_plot <- ggplot(blue_mid_champ,aes(x=champ,y=winning_rate))
 blue_mid_plot+geom_col()
 
-#blue_jungle_champ 使用top 10  
 blue_jungle_champion<- as.factor(matches_data$blue_jungle_champname)
 x_blue_jg <- c()
 for(i in 1:10){
@@ -159,7 +107,6 @@ blue_jg_champ <- data.frame(champ=as.factor(x_blue_jg),winning_rate=y_blue_jg)
 blue_jg_plot <- ggplot(blue_jg_champ,aes(x=champ,y=winning_rate))
 blue_jg_plot+geom_col()
 
-#blue_top_champ 使用top 10 
 blue_top_champion <- as.factor(matches$blue_top_champname)
 x_blue_top <- c()
 for(i in 1:10){
@@ -178,7 +125,6 @@ blue_top_plot+geom_col()
 #analyze win in purple_champ  with point
 blue_win <- matches$blue_win
 
-#purple_ad_champ 使用top 10 
 purple_ad_champion <- as.factor(matches$purple_ad_champname)
 x_purple_ad <- c()
 for(i in 1:10){
@@ -194,7 +140,6 @@ purple_ad_champ <- data.frame(champ=as.factor(x_purple_ad),winning_rate=y_purple
 purple_ad_plot <- ggplot(purple_ad_champ,aes(x=champ,y=winning_rate))
 purple_ad_plot+geom_col()
 
-#purple_sup_champ 使用top 10 
 purple_sup_champion<- as.factor(matches$purple_sup_champname)
 x_purple_sup <- c()
 for(i in 1:10){
@@ -210,7 +155,6 @@ purple_sup_champ <- data.frame(champ=as.factor(x_purple_sup),winning_rate=y_purp
 purple_sup_plot <- ggplot(purple_sup_champ,aes(x=champ,y=winning_rate))
 purple_sup_plot+geom_col()
 
-#purple_mid_champ 使用top 10 
 purple_mid_champion <- as.factor(matches$purple_mid_champname)
 x_purple_mid <- c()
 for(i in 1:10){
@@ -226,7 +170,6 @@ purple_mid_champ <- data.frame(champ=as.factor(x_purple_mid),winning_rate=y_purp
 purple_mid_plot <- ggplot(purple_mid_champ,aes(x=champ,y=winning_rate))
 purple_mid_plot+geom_col()
 
-#purple_jungle_champ 使用top 10 
 purple_jungle_champion<- as.factor(matches$purple_jungle_champname)
 x_purple_jg <- c()
 for(i in 1:10){
@@ -242,7 +185,6 @@ purple_jg_champ <- data.frame(champ=as.factor(x_purple_jg),winning_rate=y_purple
 purple_jg_plot <- ggplot(purple_jg_champ,aes(x=champ,y=winning_rate))
 purple_jg_plot+geom_col()
 
-#purple_top_champ 使用top 10 
 purple_top_champion <- as.factor(matches$purple_top_champname)
 x_purple_top <- c()
 for(i in 1:10){
@@ -276,37 +218,35 @@ matches <- cbind(matches,
                  purple_mid_kad = ((matches$purple_mid_kills+matches$purple_mid_assists)/matches$purple_mid_deaths),
                  purple_jungle_kad = ((matches$purple_jungle_kills+matches$purple_jungle_assists)/matches$purple_jungle_deaths),
                  purple_top_kad = ((matches$purple_top_kills+matches$purple_top_assists)/matches$purple_top_deaths))
+
 matches_blue_kda<-matches[,c('blue_ad_kad','blue_sup_kad','blue_mid_kad','blue_jungle_kad','blue_top_kad'
 )]
-cor(matches_blue_kda, method="pearson")
+blue_kad_cor <- data.frame(cor(matches_blue_kda, method="pearson"))
 pairs(matches_blue_kda,spread = F,lty.smooth=2,main='blue_kda_correlation')
-
 matches_purple_kda<-matches[,c('purple_ad_kad','purple_sup_kad','purple_mid_kad','purple_jungle_kad','purple_top_kad'
 )]
-
-cor(matches_purple_kda, method="pearson")
+purple_kad_cor <- data.frame(cor(matches_purple_kda, method="pearson"))
 pairs(matches_purple_kda,spread = F,lty.smooth=2,main='purple_kda_correlation')
 matches <- cbind(matches,
-                 blue_ad_kad_range = ifelse(matches$blue_ad_kad>6,6,matches$blue_ad_kad),
-                 blue_sup_kad_range = ifelse(matches$blue_sup_kad>6,6,matches$blue_sup_kad),
-                 blue_mid_kad_range = ifelse(matches$blue_mid_kad>6,6,matches$blue_mid_kad),
-                 blue_jungle_kad_range = ifelse(matches$blue_jungle_kad>6,6,matches$blue_jungle_kad),
-                 blue_top_kad_range = ifelse(matches$blue_top_kad>6,6,matches$blue_top_kad),
-                 purple_ad_kad_range = ifelse(matches$purple_ad_kad>6,6,matches$purple_ad_kad),
-                 purple_sup_kad_range = ifelse(matches$purple_sup_kad>6,6,matches$purple_sup_kad),
-                 purple_mid_kad_range = ifelse(matches$purple_mid_kad>6,6,matches$purple_mid_kad),
-                 purple_jungle_kad_range = ifelse(matches$purple_jungle_kad>6,6,matches$purple_jungle_kad),
-                 purple_top_kad_range = ifelse(matches$purple_top_kad>6,6,matches$purple_top_kad)
+                 blue_ad_kad_ln = log(matches$blue_ad_kad+1),
+                 blue_sup_kad_ln = log(matches$blue_sup_kad+1),
+                 blue_mid_kad_ln = log(matches$blue_mid_kad+1),
+                 blue_jungle_kad_ln = log(matches$blue_jungle_kad+1),
+                 blue_top_kad_ln = log(matches$blue_top_kad+1),
+                 purple_ad_kad_ln = log(matches$purple_ad_kad+1),
+                 purple_sup_kad_ln = log(matches$purple_sup_kad+1),
+                 purple_mid_kad_ln = log(matches$purple_mid_kad+1),
+                 purple_jungle_kad_ln = log(matches$purple_jungle_kad+1),
+                 purple_top_kad_ln = log(matches$purple_top_kad+1)
 )
-
-matches_blue_kda_range<-matches[,c('blue_ad_kad_range','blue_sup_kad_range','blue_mid_kad_range','blue_jungle_kad_range','blue_top_kad_range'
+matches_blue_kda_ln<-matches[,c('blue_ad_kad_ln','blue_sup_kad_ln','blue_mid_kad_ln','blue_jungle_kad_ln','blue_top_kad_ln'
 )]
-cor(matches_blue_kda_range, method="pearson")
-pairs(matches_blue_kda_range,spread = F,lty.smooth=2,main='blue_kda_range_correlation')
-matches_purple_kda_range<-matches[,c('purple_ad_kad_range','purple_sup_kad_range','purple_mid_kad_range','purple_jungle_kad_range','purple_top_kad_range'
+blue_kda_ln_cor <- data.frame(cor(matches_blue_kda_ln, method="pearson"))
+pairs(matches_blue_kda_ln,spread = F,lty.smooth=2,main='blue_kda_ln_correlation')
+matches_purple_kda_ln<-matches[,c('purple_ad_kad_ln','purple_sup_kad_ln','purple_mid_kad_ln','purple_jungle_kad_ln','purple_top_kad_ln'
 )]
-cor(matches_purple_kda_range, method="pearson")
-pairs(matches_purple_kda_range,spread = F,lty.smooth=2,main='purple_kda_range_correlation')
+purple_kda_ln_cor <- data.frame(cor(matches_purple_kda_ln, method="pearson"))
+pairs(matches_purple_kda_ln,spread = F,lty.smooth=2,main='purple_kda_ln_correlation')
 # --KDA--
 
 
@@ -314,20 +254,76 @@ pairs(matches_purple_kda_range,spread = F,lty.smooth=2,main='purple_kda_range_co
 
 library(shiny)
 ui <- navbarPage("LOL Analysis", fluid = TRUE, 
-      tabPanel("Matches", headerPanel("Match analysis: predict the winning team"), 
-               plotOutput("radar_plot", height = "1000px"),
-               plotOutput("champion"), 
-               plotOutput("kda", height = "1000px")
-               ), 
+      tabPanel("Match", headerPanel("Match analysis: what factors are important in winning"), 
+               plotOutput("radar_plot", height = "1000px")), 
       
+      tabPanel("Characters", headerPanel("Character analysis: choose the best character for each role"), 
+               sidebarPanel(selectInput("blue_role", "Blue team: choose a role", 
+                                        c("AD", "Support", "Middle", "Jungle", "Top"))),
+               mainPanel(plotOutput("blue_champion")),
+               sidebarPanel(selectInput("purple_role", "Purple team: choose a role", 
+                                        c("AD", "Support", "Middle", "Jungle", "Top"))),
+               mainPanel(plotOutput("purple_champion"))),
+      
+      tabPanel("KDA", headerPanel("KDA analysis: correlation between different roles in the game"), 
+               sidebarPanel(selectInput("source_kda", "Data source", c("Original", "Altered(log)")),
+                            selectInput("team_kda", "Team", c("Blue", "Purple"))),
+               mainPanel(plotOutput("kda")),
+               tableOutput("kda_table")),
       
       tabPanel("Teams", headerPanel("Team analysis: find the best team")))
 
 server <- function(input, output){
-  output$radar_plot <- renderPlot(ggradar(purple_win_fix,grid.line.width = 0.5))
-  output$champion <- renderPlot(purple_top_plot+geom_col())
-  output$kda <- renderPlot(pairs(matches_purple_kda_range,spread = F,lty.smooth=2,main='purple_kda_range_correlation'))
+  blue_roleInput <- reactive({
+    switch(input$blue_role,
+           "AD" = blue_ad_plot,
+           "Support" = blue_sup_plot,
+           "Middle" = blue_mid_plot, 
+           "Jungle" = blue_jg_plot, 
+           "Top" = blue_top_plot)
+  })
+  purple_roleInput <- reactive({
+    switch(input$purple_role,
+           "AD" = purple_ad_plot,
+           "Support" = purple_sup_plot,
+           "Middle" = purple_mid_plot, 
+           "Jungle" = purple_jg_plot, 
+           "Top" = purple_top_plot)
+  })
+  source_kdaInput <- reactive({
+    switch(input$source_kda, "Original" = "org", "Altered(log)" = "log")
+  })
   
+  team_kdaInput <- reactive({
+    switch(input$team_kda, "Blue" = "blue", "Purple" = "purple")
+  })
+  
+  output$radar_plot <- renderPlot({ggradar(blue_win_first_fix,grid.line.width = 0.5)})
+  output$blue_champion <- renderPlot({blue_roleInput()+geom_col()})
+  output$purple_champion <- renderPlot({purple_roleInput()+geom_col()})
+  output$kda <- renderPlot({
+    if(source_kdaInput()=="log" && team_kdaInput()=="purple"){
+      plot <- pairs(matches_purple_kda_ln,spread = F,lty.smooth=2,main='purple_kda_ln_correlation')}
+    if(source_kdaInput()=="log" && team_kdaInput()=="blue"){
+      plot <- pairs(matches_blue_kda_ln,spread = F,lty.smooth=2,main='blue_kda_ln_correlation')}
+    if(source_kdaInput()=="org" && team_kdaInput()=="purple"){
+      plot <- pairs(matches_purple_kda,spread = F,lty.smooth=2,main='purple_kda_correlation')}
+    if(source_kdaInput()=="org" && team_kdaInput()=="blue"){
+      plot <- pairs(matches_blue_kda,spread = F,lty.smooth=2,main='blue_kda_correlation')}
+    plot
+  })
+  output$kda_table <- renderTable({
+    # purple_kda_ln_cor, rownames=TRUE
+    
+    if(source_kdaInput()=="log" && team_kdaInput()=="purple"){
+      table <- purple_kda_ln_cor}
+    if(source_kdaInput()=="log" && team_kdaInput()=="blue"){
+      table <- blue_kda_ln_cor}
+    if(source_kdaInput()=="org" && team_kdaInput()=="purple"){
+      table <- purple_kad_cor}
+    if(source_kdaInput()=="org" && team_kdaInput()=="blue"){
+      table <- blue_kad_cor}
+    table}, rownames=TRUE)
 }
 
 shinyApp(ui=ui, server=server)
