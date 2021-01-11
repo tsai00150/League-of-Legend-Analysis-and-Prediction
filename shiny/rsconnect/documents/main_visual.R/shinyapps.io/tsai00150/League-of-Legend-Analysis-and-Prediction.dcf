@@ -5,8 +5,8 @@ account: tsai00150
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3456229
-bundleId: 4078131
+bundleId: 4079052
 url: https://tsai00150.shinyapps.io/League-of-Legend-Analysis-and-Prediction/
-when: 1610266192.72325
+when: 1610296327.82785
 asMultiple: FALSE
 asStatic: FALSE

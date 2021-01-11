@@ -11,17 +11,17 @@ matches_data <- read.xlsx('matches_na.xlsx',sheet = 1)
 matches <- na.omit(matches_data)
 #analyze win in blue_first  with ggradar
 win <- c('Blue_Win','Purple_Win')
-firstblood_fix <- c(sum(matches_data$blue_firstBlood=='1'&matches_data$blue_win=='1')/3008,sum(matches_data$blue_firstBlood=='1'&matches_data$blue_win=='0')/3008)
-firstTower_fix <- c(sum(matches_data$blue_firstTower=='1'&matches_data$blue_win=='1')/3008,sum(matches_data$blue_firstTower=='1'&matches_data$blue_win=='0')/3008)
-firstDragon_fix <- c(sum(matches_data$blue_firstDragon=='1'&matches_data$blue_win=='1')/3008,sum(matches_data$blue_firstDragon=='1'&matches_data$blue_win=='0')/3008)
-firstBaron_fix <- c(sum(matches_data$blue_firstBaron=='1'&matches_data$blue_win=='1')/3008,sum(matches_data$blue_firstBaron=='1'&matches_data$blue_win=='0')/3008)
-firstInhibitor_fix <- c(sum(matches_data$blue_firstInhibitor=='1'&matches_data$blue_win=='1')/3008,sum(matches_data$blue_firstInhibitor=='1'&matches_data$blue_win=='0')/3008)
-firstRiftHerald_fix <- c(sum(matches_data$blue_firstRiftHerald=='1'&matches_data$blue_win=='1')/3008,sum(matches_data$blue_firstRiftHerald=='1'&matches_data$blue_win=='0')/3008)
+firstblood_fix <- c(sum(matches_data$blue_firstBlood=='1'&matches_data$blue_win=='1')/371,sum(matches_data$blue_firstBlood=='1'&matches_data$blue_win=='0')/371)
+firstTower_fix <- c(sum(matches_data$blue_firstTower=='1'&matches_data$blue_win=='1')/371,sum(matches_data$blue_firstTower=='1'&matches_data$blue_win=='0')/371)
+firstDragon_fix <- c(sum(matches_data$blue_firstDragon=='1'&matches_data$blue_win=='1')/371,sum(matches_data$blue_firstDragon=='1'&matches_data$blue_win=='0')/371)
+firstBaron_fix <- c(sum(matches_data$blue_firstBaron=='1'&matches_data$blue_win=='1')/371,sum(matches_data$blue_firstBaron=='1'&matches_data$blue_win=='0')/371)
+firstInhibitor_fix <- c(sum(matches_data$blue_firstInhibitor=='1'&matches_data$blue_win=='1')/371,sum(matches_data$blue_firstInhibitor=='1'&matches_data$blue_win=='0')/371)
+firstRiftHerald_fix <- c(sum(matches_data$blue_firstRiftHerald=='1'&matches_data$blue_win=='1')/371,sum(matches_data$blue_firstRiftHerald=='1'&matches_data$blue_win=='0')/371)
 
-blue_win_first_fix <- cbind.data.frame(blue_win=win,blue_firstBlood=as.numeric(firstblood_fix),
-                                       blue_firstTowerd=as.numeric(firstTower_fix),blue_firstDragon=as.numeric(firstDragon_fix),
-                                       blue_firstBaron=as.numeric(firstBaron_fix),blue_firstInhibitor=as.numeric(firstInhibitor_fix),
-                                       blue_firstRiftHerald=as.numeric(firstRiftHerald_fix))
+blue_win_first_fix <- cbind.data.frame(blue_Win=win,blue_FirstBlood=as.numeric(firstblood_fix),
+                                       blue_FirstTower=as.numeric(firstTower_fix),blue_FirstDragon=as.numeric(firstDragon_fix),
+                                       blue_FirstBaron=as.numeric(firstBaron_fix),blue_FirstInhibitor=as.numeric(firstInhibitor_fix),
+                                       blue_FirstRiftHerald=as.numeric(firstRiftHerald_fix))
 
 ggradar(blue_win_first_fix,grid.line.width = 0.5)
 # --blue_purple_win_radar--
@@ -249,6 +249,12 @@ purple_kda_ln_cor <- data.frame(cor(matches_purple_kda_ln, method="pearson"))
 pairs(matches_purple_kda_ln,spread = F,lty.smooth=2,main='purple_kda_ln_correlation')
 # --KDA--
 
+# --MATCH ANALYSIS--
+
+rpart_df <- read.csv("report_rpart.csv")
+naiveBayes_df <- read.csv("report_naiveBayes.csv")
+svm_df <- read.csv("report_svm.csv")
+rf_df <- read.csv("report_rf.csv")
 
 
 
@@ -257,13 +263,18 @@ ui <- navbarPage("LOL Analysis", fluid = TRUE,
       tabPanel("Match", headerPanel("Match analysis: what factors are important in winning"), 
                plotOutput("radar_plot", height = "1000px")), 
       
-      tabPanel("Characters", headerPanel("Character analysis: choose the best character for each role"), 
-               sidebarPanel(selectInput("blue_role", "Blue team: choose a role", 
-                                        c("AD", "Support", "Middle", "Jungle", "Top"))),
-               mainPanel(plotOutput("blue_champion")),
-               sidebarPanel(selectInput("purple_role", "Purple team: choose a role", 
-                                        c("AD", "Support", "Middle", "Jungle", "Top"))),
-               mainPanel(plotOutput("purple_champion"))),
+      
+      tabPanel("Champion", headerPanel("Champion analysis: choose the best champion for each role"), 
+               column(12, sidebarPanel(selectInput("blue_role", "Blue team: choose a role", 
+                                        c("AD", "Support", "Middle", "Jungle", "Top")), 
+                            tableOutput("blue_data_champion")),
+               mainPanel(plotOutput("blue_champion"))),
+               
+               column(12, sidebarPanel(selectInput("purple_role", "Purple team: choose a role", 
+                                        c("AD", "Support", "Middle", "Jungle", "Top")), 
+                            tableOutput("purple_data_champion")),
+               mainPanel(plotOutput("purple_champion")))),
+      
       
       tabPanel("KDA", headerPanel("KDA analysis: correlation between different roles in the game"), 
                sidebarPanel(selectInput("source_kda", "Data source", c("Original", "Altered(log)")),
@@ -271,9 +282,17 @@ ui <- navbarPage("LOL Analysis", fluid = TRUE,
                mainPanel(plotOutput("kda")),
                tableOutput("kda_table")),
       
-      tabPanel("Teams", headerPanel("Team analysis: find the best team")))
+      
+      tabPanel("Prediction", headerPanel("Prediction: predict the winning team in each match"), 
+               sidebarPanel(selectInput("model", "Choose model:", c("rpart", "naiveBayes", "svm", "randomForest")), 
+                            ), mainPanel(tableOutput("predict_model"))))
 
 server <- function(input, output){
+  # RADAR
+  output$radar_plot <- renderPlot({ggradar(blue_win_first_fix,grid.line.width = 0.5)})
+  
+  
+  # CHAMPION
   blue_roleInput <- reactive({
     switch(input$blue_role,
            "AD" = blue_ad_plot,
@@ -290,17 +309,30 @@ server <- function(input, output){
            "Jungle" = purple_jg_plot, 
            "Top" = purple_top_plot)
   })
-  source_kdaInput <- reactive({
-    switch(input$source_kda, "Original" = "org", "Altered(log)" = "log")
+  blue_roledataInput <- reactive({
+    switch(input$blue_role, 
+           "AD" = blue_ad_champ,
+           "Support" = blue_sup_champ,
+           "Middle" = blue_mid_champ, 
+           "Jungle" = blue_jg_champ, 
+           "Top" = blue_top_champ)
+  })
+  purple_roledataInput <- reactive({
+    switch(input$purple_role, 
+           "AD" = purple_ad_champ,
+           "Support" = purple_sup_champ,
+           "Middle" = purple_mid_champ, 
+           "Jungle" = purple_jg_champ, 
+           "Top" = purple_top_champ)
   })
   
-  team_kdaInput <- reactive({
-    switch(input$team_kda, "Blue" = "blue", "Purple" = "purple")
-  })
-  
-  output$radar_plot <- renderPlot({ggradar(blue_win_first_fix,grid.line.width = 0.5)})
   output$blue_champion <- renderPlot({blue_roleInput()+geom_col()})
   output$purple_champion <- renderPlot({purple_roleInput()+geom_col()})
+  output$blue_data_champion <- renderTable({blue_roledataInput()})
+  output$purple_data_champion <- renderTable({purple_roledataInput()})
+  
+  
+  #KDA
   output$kda <- renderPlot({
     if(source_kdaInput()=="log" && team_kdaInput()=="purple"){
       plot <- pairs(matches_purple_kda_ln,spread = F,lty.smooth=2,main='purple_kda_ln_correlation')}
@@ -312,8 +344,16 @@ server <- function(input, output){
       plot <- pairs(matches_blue_kda,spread = F,lty.smooth=2,main='blue_kda_correlation')}
     plot
   })
+  
+  source_kdaInput <- reactive({
+    switch(input$source_kda, "Original" = "org", "Altered(log)" = "log")
+  })
+  
+  team_kdaInput <- reactive({
+    switch(input$team_kda, "Blue" = "blue", "Purple" = "purple")
+  })
+  
   output$kda_table <- renderTable({
-    # purple_kda_ln_cor, rownames=TRUE
     
     if(source_kdaInput()=="log" && team_kdaInput()=="purple"){
       table <- purple_kda_ln_cor}
@@ -324,6 +364,16 @@ server <- function(input, output){
     if(source_kdaInput()=="org" && team_kdaInput()=="blue"){
       table <- blue_kad_cor}
     table}, rownames=TRUE)
+  
+  
+  predictInput <- reactive({
+    switch(input$model, "rpart" = rpart_df, "naiveBayes" = naiveBayes_df, "svm" = svm_df, "randomForest" = rf_df)
+  })
+  
+  #PREDICT
+  output$predict_model <- renderTable({
+    predictInput()
+  })
 }
 
 shinyApp(ui=ui, server=server)
