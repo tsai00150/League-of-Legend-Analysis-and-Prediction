@@ -1,7 +1,7 @@
-set,training,validation,test
-fold1,0.93,0.88,0.95
-fold2,0.94,0.88,0.86
-fold3,0.95,0.92,0.9
-fold4,0.94,0.91,0.92
-fold5,0.93,0.89,0.89
-ave.,0.94,0.9,0.9
+set,training_auc,training_acc,validation_auc,validation_acc,test_auc,test_acc
+fold1,0.93,0.93,0.9,0.9,0.91,0.91
+fold2,0.95,0.95,0.94,0.94,0.89,0.89
+fold3,0.93,0.93,0.91,0.91,0.93,0.93
+fold4,0.95,0.95,0.88,0.88,0.9,0.9
+fold5,0.93,0.93,0.92,0.92,0.88,0.88
+ave.,0.94,0.94,0.94,0.91,0.94,0.9

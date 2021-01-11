@@ -4,6 +4,7 @@ library('tidyr')
 library('readxl')
 library('openxlsx')
 library(e1071)
+library('ROCR')
 
 num_of_folds <- 5
 
@@ -126,12 +127,44 @@ for(i in 1:num_of_folds){
   val_performance <- round(sum(diag(val_tab))/sum(val_tab), 2)
   test_performance <- round(sum(diag(test_tab))/sum(test_tab), 2)
   
-  new_row <- data.frame(set=paste('fold',i,sep=''), training=train_performance, validation=val_performance, test=test_performance)
+  # Calculate AUC
+  train_pred_ROCR <- prediction(as.numeric(train_res$pred), as.numeric(train_res$truth))
+  train_auc_ROCR <- performance(train_pred_ROCR, measure = "auc")
+  train_auc <- train_auc_ROCR@y.values[[1]]
+  
+  val_pred_ROCR <- prediction(as.numeric(val_res$pred), as.numeric(val_res$truth))
+  val_auc_ROCR <- performance(val_pred_ROCR, measure = "auc")
+  val_auc <- val_auc_ROCR@y.values[[1]]
+  
+  test_pred_ROCR <- prediction(as.numeric(test_res$pred), as.numeric(test_res$truth))
+  test_auc_ROCR <- performance(test_pred_ROCR, measure = "auc")
+  test_auc <- test_auc_ROCR@y.values[[1]]
+  
+  train_auc <- round(train_auc,2)
+  val_auc <- round(val_auc,2)
+  test_auc <- round(test_auc,2)
+  
+  
+  new_row <- data.frame(set=paste('fold',i,sep=''), 
+                        training_auc=train_auc, 
+                        training_acc=train_performance,
+                        validation_auc=val_auc,
+                        validation_acc=val_performance, 
+                        test_auc=test_auc, 
+                        test_acc=test_performance)
+  
   perform_df <- rbind(perform_df, new_row)
 }
 
 # create average row of performance report
-avg_row <- data.frame(set='ave.', training=round(mean(perform_df$training),2), validation=round(mean(perform_df$validation),2), test=round(mean(perform_df$test),2))
+avg_row <- data.frame(set='ave.', 
+                      training_auc=round(mean(perform_df$training_auc),2),
+                      training_acc=round(mean(perform_df$training_acc),2), 
+                      validation_auc=round(mean(perform_df$training_auc),2),
+                      validation_acc=round(mean(perform_df$validation_acc),2), 
+                      test_auc=round(mean(perform_df$training_auc),2),
+                      test_acc=round(mean(perform_df$test_acc),2))
+
 perform_df <- rbind(perform_df, avg_row)
 
 # write to output file
@@ -184,17 +217,6 @@ for(i in 1:num_of_folds){
   
   # select best decision tree model
   val_df <- data.frame()
-  
-  # for(j in 4:5){
-  #   model = glm(blue_win ~ blue_ad_kad+blue_sup_kad+blue_mid_kad+blue_jungle_kad+blue_top_kad+blue_firstTower+blue_firstInhibitor+blue_firstBaron, family="binomial", data=train_data)
-  #   # calibrate model using validation fold
-  #   resultframe <- data.frame(truth=val_data$blue_win,
-  #                             pred=predict(model, val_data, type='response'))
-  #   rtab <- table(resultframe)
-  #   accuracy <- sum(diag(rtab))/sum(rtab)
-  #   val_df[j,1] = accuracy
-  # }
-  # best_depth <- which.max(val_df[,1])
   
   # select best model
   new_model <- glm(blue_win~blue_ad_kad+blue_sup_kad+blue_mid_kad+blue_jungle_kad+blue_top_kad+blue_firstTower+blue_firstInhibitor+blue_firstBaron, data=train_data, family="binomial")
@@ -305,23 +327,13 @@ for(i in 1:num_of_folds){
   # select best decision tree model
   val_df <- data.frame()
   
-  # for(j in 4:10){
-  #   model <- naiveBayes(blue_win ~ blue_ad_kad+blue_sup_kad+blue_mid_kad+blue_jungle_kad+blue_top_kad+blue_firstTower+blue_firstInhibitor+blue_firstBaron,
-  #                  data=train_data)
-  #   # calibrate model using validation fold
-  #   resultframe <- data.frame(truth=val_data$blue_win,
-  #                             pred=predict(model, val_data))
-  #   rtab <- table(resultframe)
-  #   accuracy <- sum(diag(rtab))/sum(rtab)
-  #   val_df[j,1] = accuracy
-  # }
-  # best_depth <- which.max(val_df[,1])
-  
   # select best model
   new_model <- naiveBayes(as.factor(blue_win)~blue_ad_kad+blue_sup_kad+blue_mid_kad+blue_jungle_kad+blue_top_kad+blue_firstTower+blue_firstInhibitor+blue_firstBaron,
                           data=train_data)
   
+  
   summary(new_model)
+  
   # output training, validation, testing performance
   train_res <- data.frame(truth=train_data$blue_win,
                           pred=predict(new_model, train_data))
@@ -338,12 +350,43 @@ for(i in 1:num_of_folds){
   val_performance <- round(sum(diag(val_tab))/sum(val_tab), 2)
   test_performance <- round(sum(diag(test_tab))/sum(test_tab), 2)
   
-  new_row <- data.frame(set=paste('fold',i,sep=''), training=train_performance, validation=val_performance, test=test_performance)
+  # Calculate AUC
+  train_pred_ROCR <- prediction(as.numeric(train_res$pred), as.numeric(train_res$truth))
+  train_auc_ROCR <- performance(train_pred_ROCR, measure = "auc")
+  train_auc <- train_auc_ROCR@y.values[[1]]
+  
+  val_pred_ROCR <- prediction(as.numeric(val_res$pred), as.numeric(val_res$truth))
+  val_auc_ROCR <- performance(val_pred_ROCR, measure = "auc")
+  val_auc <- val_auc_ROCR@y.values[[1]]
+  
+  test_pred_ROCR <- prediction(as.numeric(test_res$pred), as.numeric(test_res$truth))
+  test_auc_ROCR <- performance(test_pred_ROCR, measure = "auc")
+  test_auc <- test_auc_ROCR@y.values[[1]]
+  
+  train_auc <- round(train_auc,2)
+  val_auc <- round(val_auc,2)
+  test_auc <- round(test_auc,2)
+  
+  
+  new_row <- data.frame(set=paste('fold',i,sep=''), 
+                        training_auc=train_auc, 
+                        training_acc=train_performance,
+                        validation_auc=val_auc,
+                        validation_acc=val_performance, 
+                        test_auc=test_auc, 
+                        test_acc=test_performance)
+  
   perform_df <- rbind(perform_df, new_row)
 }
 
 # create average row of performance report
-avg_row <- data.frame(set='ave.', training=round(mean(perform_df$training),2), validation=round(mean(perform_df$validation),2), test=round(mean(perform_df$test),2))
+avg_row <- data.frame(set='ave.', 
+                      training_auc=round(mean(perform_df$training_auc),2),
+                      training_acc=round(mean(perform_df$training_acc),2), 
+                      validation_auc=round(mean(perform_df$training_auc),2),
+                      validation_acc=round(mean(perform_df$validation_acc),2), 
+                      test_auc=round(mean(perform_df$training_auc),2),
+                      test_acc=round(mean(perform_df$test_acc),2))
 perform_df <- rbind(perform_df, avg_row)
 
 # write to output file
