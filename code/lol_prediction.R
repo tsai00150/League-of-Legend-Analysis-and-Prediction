@@ -24,6 +24,13 @@ getmatrix <- function(model, target_set){
   return (accframe)
 }
 
+getmatrix1 <- function(model, target_set){
+  accframe <- table(data.frame(truth=target_set$blue_win,
+                               pred=predict(model, newdata=target_set)))
+  
+  return (accframe)
+}
+
 getauc_acc1 <- function(model, target_set){
   
   aucframe <- data.frame(truth=target_set$blue_win,
@@ -164,7 +171,6 @@ for(i in 1:k){
   print(paste("fold",i,"done"))  
 }
 
-
 # SVM
 for(i in 1:k){
   print(paste("start modeling fold", i, ".."))
@@ -249,27 +255,6 @@ for(i in 1:k){
   print(paste("fold",i,"done"))  
 }
 
-ave <- data.frame(set='ave.',
-                  training_auc=round(mean(as.numeric(output_df$training_auc)), 2),
-                  training_acc=round(mean(as.numeric(output_df$training_acc)), 2),
-                  validation_auc=round(mean(as.numeric(output_df$validation_auc)), 2),
-                  validation_acc=round(mean(as.numeric(output_df$validation_acc)), 2),
-                  test_auc=round(mean(as.numeric(output_df$test_auc)), 2),
-                  test_acc=round(mean(as.numeric(output_df$test_acc)), 2),
-                  sensitivity=round(mean(output_df$sensitivity), 2),
-                  specificity=round(mean(output_df$specificity), 2),
-                  precision=round(mean(as.numeric(output_df$precision)), 2),
-                  recall=round(mean(output_df$recall), 2),
-                  F1=round(mean(as.numeric(output_df$F1)), 2)
-                  )
-output_df <- rbind(output_df, ave)
-output_df <- format.data.frame(output_df, 2)
-write.table(output_df, 'randomforest_5.csv', row.names=FALSE, quote=FALSE, sep = ',')
-
-
-
-
-
 # rpart
 for(i in 1:k){
   print(paste("start modeling fold", i, ".."))
@@ -317,17 +302,34 @@ for(i in 1:k){
                  data=train.data, 
                  control=rpart.control(maxdepth=best_depth, minsplit=2),
                  method = 'class') 
-  test.auc <- getauc_acc(model, test.data)[1]
-  test.acc <- getauc_acc(model, test.data)[2]
+  test.auc <- getauc_acc1(model, test.data)[1]
+  test.acc <- getauc_acc1(model, test.data)[2]
   test_result <- c(round(test.auc, 2), round(test.acc), 2)
   
+  test.matrix <- getmatrix(model, test.data)
+  test.matrix <- data.frame(test.matrix)
+  TP <- test.matrix$Freq[6] 
+  FP <- test.matrix$Freq[5]
+  TN <- test.matrix$Freq[3]
+  FN <- test.matrix$Freq[4]
+  sensitivity <- TP/(TP+FN)
+  specificity <- TN/(TN+FP)
+  precision <- TP/(TP+FP)
+  recall <- TP/(TP+FN)
+  F1 = 2*precision*recall/(precision+recall)
+  
   row <- data.frame(set=fold.name,
-                    training_auc=training_result[1],
-                    training_acc=training_result[2],
-                    validation_auc=validation_result[1],
-                    validation_acc=validation_result[2],
-                    test_auc=test_result[1],
-                    test_acc=test_result[2])
+                    training_auc=round(training_result[1],4),
+                    training_acc=round(training_result[2],4),
+                    validation_auc=round(validation_result[1],4),
+                    validation_acc=round(validation_result[2],4),
+                    test_auc=round(test_result[1],4),
+                    test_acc=round(test_result[2],4),
+                    sensitivity=round(sensitivity,4),
+                    specificity=round(specificity,4),
+                    precision=round(precision,4),
+                    recall=round(recall,4),
+                    F1=round(F1,4))
   output_df <- rbind(output_df, row)
   
   print(paste("fold",i,"done"))  
@@ -354,7 +356,7 @@ for(i in 1:k){
                         data=train.data)
  
   #calculate the AUC in order to choose the right model
-  train.auc <- getauc_acc(model, train.data)
+  train.auc <- getauc_acc1(model, train.data)[1]
   train.acc <- getauc_acc1(model, train.data)[2]
   valid.auc <- getauc_acc1(model, valid.data)[1]
   valid.acc <- getauc_acc1(model, valid.data)[2]
@@ -373,15 +375,49 @@ for(i in 1:k){
   test.acc <- getauc_acc1(model, test.data)[2]
   test_result <- c(round(test.auc, 2), round(test.acc), 2)
   
+  test.matrix <- getmatrix1(model, test.data)
+  test.matrix <- data.frame(test.matrix)
+  TP <- test.matrix$Freq[1] 
+  FP <- test.matrix$Freq[2]
+  TN <- test.matrix$Freq[4]
+  FN <- test.matrix$Freq[3]
+  sensitivity <- TP/(TP+FN)
+  specificity <- TN/(TN+FP)
+  precision <- TP/(TP+FP)
+  recall <- TP/(TP+FN)
+  F1 = 2*precision*recall/(precision+recall)
+  
   row <- data.frame(set=fold.name,
-                    training_auc=training_result[1],
-                    training_acc=training_result[2],
-                    validation_auc=validation_result[1],
-                    validation_acc=validation_result[2],
-                    test_auc=test_result[1],
-                    test_acc=test_result[2])
+                    training_auc=round(training_result[1],4),
+                    training_acc=round(training_result[2],4),
+                    validation_auc=round(validation_result[1],4),
+                    validation_acc=round(validation_result[2],4),
+                    test_auc=round(test_result[1],4),
+                    test_acc=round(test_result[2],4),
+                    sensitivity=round(sensitivity,4),
+                    specificity=round(specificity,4),
+                    precision=round(precision,4),
+                    recall=round(recall,4),
+                    F1=round(F1,4))
   output_df <- rbind(output_df, row)
   
   print(paste("fold",i,"done"))  
 }
+
+ave <- data.frame(set='ave.',
+                  training_auc=round(mean(as.numeric(output_df$training_auc)), 2),
+                  training_acc=round(mean(as.numeric(output_df$training_acc)), 2),
+                  validation_auc=round(mean(as.numeric(output_df$validation_auc)), 2),
+                  validation_acc=round(mean(as.numeric(output_df$validation_acc)), 2),
+                  test_auc=round(mean(as.numeric(output_df$test_auc)), 2),
+                  test_acc=round(mean(as.numeric(output_df$test_acc)), 2),
+                  sensitivity=round(mean(output_df$sensitivity), 2),
+                  specificity=round(mean(output_df$specificity), 2),
+                  precision=round(mean(as.numeric(output_df$precision)), 2),
+                  recall=round(mean(output_df$recall), 2),
+                  F1=round(mean(as.numeric(output_df$F1)), 2)
+)
+output_df <- rbind(output_df, ave)
+output_df <- format.data.frame(output_df, 2)
+write.table(output_df, 'rpart_5.csv', row.names=FALSE, quote=FALSE, sep = ',')
 print("done!!!")
