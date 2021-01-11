@@ -1,5 +1,6 @@
 library(ggplot2)
-matches_data <- read.xlsx('matches_na.xlsx',sheet = 1)
+library(openxlsx)
+matches_data <- read.xlsx('dataset/matches_na.xlsx', sheet = 1)
 matches <- na.omit(matches_data)
 #analyze win in blue_kda in range
 matches <- cbind(matches,
@@ -13,6 +14,7 @@ matches <- cbind(matches,
                  purple_mid_kad = ((matches$purple_mid_kills+matches$purple_mid_assists)/matches$purple_mid_deaths),
                  purple_jungle_kad = ((matches$purple_jungle_kills+matches$purple_jungle_assists)/matches$purple_jungle_deaths),
                  purple_top_kad = ((matches$purple_top_kills+matches$purple_top_assists)/matches$purple_top_deaths))
+
 #选取数据的数值型数据列
 #KDA比較(沒用用range) blue
 matches_blue_kda<-matches[,c('blue_ad_kad','blue_sup_kad','blue_mid_kad','blue_jungle_kad','blue_top_kad'
@@ -61,7 +63,7 @@ matches_purple_kda_ln<-matches[,c('purple_ad_kad_ln','purple_sup_kad_ln','purple
 )]
 
 #计算相关系数，方法选择pearson
-purple_kda_ln_cor <- data.drame(cor(matches_purple_kda_ln, method="pearson"))
+purple_kda_ln_cor <- data.frame(cor(matches_purple_kda_ln, method="pearson"))
 #画出相关性矩阵图，标题：相关性矩阵图
 pairs(matches_purple_kda_ln,spread = F,lty.smooth=2,main='purple_kda_ln_correlation')
 
