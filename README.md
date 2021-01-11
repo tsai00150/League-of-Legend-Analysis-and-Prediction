@@ -46,13 +46,13 @@ Rscript code/your_script.R --data data/training --output results/performance.csv
 		7. firstInhibitor
 		8. firstTower
 * Further Data Analysis: 
-	![champion png](champion.png)
-	In Champion, we provide User to query the winning rate of the top 10 champion in each position of blue and purple.
-	![cor png](cor.png)
-	In KDA, we observed the player's KDA (kill+assist) / (death).We found that the KDA data has the characteristics of left-biased peaks, so the data +1 is taken as a new feature that can be considered.
-	![kda1 png](kda1.png)
-	![kda2 png](kda2.png)
-	From the data, we can see that the correlation between support and ADC is high, while the correlation between top and other teammates KDA is low. However, there is no obvious correlation between each other. 
+	* ![champion png](champion.png)
+	* In Champion, we provide User to query the winning rate of the top 10 champion in each position of blue and purple.
+	* ![cor png](cor.png)
+	* In KDA, we observed the player's KDA (kill+assist) / (death).We found that the KDA data has the characteristics of left-biased peaks, so the data +1 is taken as a new feature that can be considered.
+	* ![kda1 png](kda1.png)
+	* ![kda2 png](kda2.png)
+	* From the data, we can see that the correlation between support and ADC is high, while the correlation between top and other teammates KDA is low. However, there is no obvious correlation between each other. 
 
 
 * Data Preprocessing: 
