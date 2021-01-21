@@ -251,11 +251,14 @@ pairs(matches_purple_kda_ln,spread = F,lty.smooth=2,main='purple_kda_ln_correlat
 
 # --MATCH ANALYSIS--
 
-rpart_df <- read.csv("report_rpart.csv")
-naiveBayes_df <- read.csv("report_naiveBayes.csv")
-svm_df <- read.csv("report_svm.csv")
-rf_df <- read.csv("report_rf.csv")
-
+rpart5_df <- read.csv("rpart_5.csv")
+rpart10_df <- read.csv("rpart_10.csv")
+naiveBayes5_df <- read.csv("naivebayes_5.csv")
+naiveBayes10_df <- read.csv("naivebayes_10.csv")
+svm5_df <- read.csv("svm_5.csv")
+svm10_df <- read.csv("svm_10.csv")
+rf5_df <- read.csv("randomforest_5.csv")
+rf10_df <- read.csv("randomforest_10.csv")
 
 
 library(shiny)
@@ -284,8 +287,9 @@ ui <- navbarPage("LOL Analysis", fluid = TRUE,
       
       
       tabPanel("Prediction", headerPanel("Prediction: predict the winning team in each match"), 
-               sidebarPanel(selectInput("model", "Choose model:", c("rpart", "naiveBayes", "svm", "randomForest")), 
-                            ), mainPanel(tableOutput("predict_model"))))
+               sidebarPanel(selectInput("model", "Choose model:", c("rpart", "naiveBayes", "svm", "randomForest")),
+                            selectInput("fold", "Choose fold:", c("5", "10"))
+                            ), column(9, mainPanel(tableOutput("predict_model")))))
 
 server <- function(input, output){
   # RADAR
@@ -365,14 +369,26 @@ server <- function(input, output){
       table <- blue_kad_cor}
     table}, rownames=TRUE)
   
-  
+  #PREDICT
   predictInput <- reactive({
-    switch(input$model, "rpart" = rpart_df, "naiveBayes" = naiveBayes_df, "svm" = svm_df, "randomForest" = rf_df)
+    switch(input$model, "rpart" = "rpart", "naiveBayes" = "naiveBayes", "svm" = "svm", "randomForest" = "randomForest")
   })
   
-  #PREDICT
+  foldInput <- reactive({
+    switch(input$fold, "5" = "5", "10" = "10")
+  })
+  
+
   output$predict_model <- renderTable({
-    predictInput()
+    if(predictInput()=="rpart"&&foldInput()=="5"){prediction <- rpart5_df}
+    if(predictInput()=="rpart"&&foldInput()=="10"){prediction <- rpart10_df}
+    if(predictInput()=="naiveBayes"&&foldInput()=="5"){prediction <- naiveBayes5_df}
+    if(predictInput()=="naiveBayes"&&foldInput()=="10"){prediction <- naiveBayes10_df}
+    if(predictInput()=="svm"&&foldInput()=="5"){prediction <- svm5_df}
+    if(predictInput()=="svm"&&foldInput()=="10"){prediction <- svm10_df}
+    if(predictInput()=="randomForest"&&foldInput()=="5"){prediction <- rf5_df}
+    if(predictInput()=="randomForest"&&foldInput()=="10"){prediction <- rf10_df}
+    prediction
   })
 }
 
